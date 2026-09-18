@@ -1,0 +1,7 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+const dist=path.resolve('dist'),api=process.env.VITE_API_URL||'https://api.petertecnet.com.br/api',base='https://prevora.petertecnet.com.br'
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+async function run(){const source=await fs.readFile(path.join(dist,'index.html'),'utf8');let forecasts=[];try{const r=await fetch(api+'/forecasts?per_page=50&sort=recent',{headers:{'X-App-Slug':'prevora'}});if(r.ok){const j=await r.json();forecasts=j.data||[]}}catch{}
+for(const f of forecasts){const dir=path.join(dist,'previsao',f.slug);await fs.mkdir(dir,{recursive:true});const title=esc(f.statement)+' | Prevora',description=esc(f.summary||'Probabilidade atual e histórico verificável desta previsão na Prevora.'),canonical=base+'/previsao/'+encodeURIComponent(f.slug);let html=source.replace(/<title>.*?<\/title>/,'<title>'+title+'</title>').replace(/<meta name="description" content=".*?"\/>/,'<meta name="description" content="'+description+'"/>').replace(/<link rel="canonical" href=".*?"\/>/,'<link rel="canonical" href="'+canonical+'"/>');await fs.writeFile(path.join(dir,'index.html'),html)}}
+run()

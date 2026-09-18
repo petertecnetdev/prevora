@@ -1,0 +1,5 @@
+import {useEffect,useState} from 'react'
+import {api} from '../api'
+import ForecastCard from '../components/ForecastCard'
+import Seo from '../components/Seo'
+export default function FuturePage(){const[timeline,setTimeline]=useState({});useEffect(()=>{api.get('/forecasts/timeline').then(({data})=>setTimeline(data.timeline||{})).catch(()=>setTimeline({}))},[]);return <section><Seo title="Radar do futuro" description="Linha do tempo de previsões abertas e acontecimentos futuros acompanhados pela Prevora." canonical="https://prevora.petertecnet.com.br/futuro"/><div className="section-head"><div><span className="eyebrow">RADAR DO FUTURO</span><h1>O que pode acontecer</h1></div></div>{Object.keys(timeline).length===0&&<div className="empty-card"><h3>Nenhum acontecimento futuro acompanhado ainda.</h3></div>}{Object.entries(timeline).map(([month,items])=><div className="timeline-group" key={month}><h2>{new Date(month+'-01T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</h2><div className="feed">{items.map(i=><ForecastCard key={i.id} forecast={i}/>)}</div></div>)}</section>}

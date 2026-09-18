@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /perfil
+Disallow: /criar
+Sitemap: https://prevora.petertecnet.com.br/sitemap.xml
