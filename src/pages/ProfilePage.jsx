@@ -1,0 +1,7 @@
+import {useEffect,useState} from 'react'
+import {Navigate} from 'react-router-dom'
+import {api} from '../api'
+import {useAuth} from '../auth'
+import ForecastCard from '../components/ForecastCard'
+import Seo from '../components/Seo'
+export default function ProfilePage(){const{user,loading,authenticated}=useAuth();const[items,setItems]=useState([]);useEffect(()=>{if(authenticated)api.get('/forecasts/me/list').then(({data})=>setItems(data.data||[])).catch(()=>setItems([]))},[authenticated]);if(!loading&&!authenticated)return <Navigate to="/" replace/>;return <section><Seo title="Meu perfil" description="Seu histórico de previsões e reputação na Prevora." canonical="https://prevora.petertecnet.com.br/perfil"/><div className="profile-head"><div className="avatar">{(user?.first_name||user?.user_name||'P').slice(0,2).toUpperCase()}</div><div><span className="eyebrow">SEU HISTÓRICO</span><h1>{user?.first_name||user?.user_name}</h1><p>Reputação cresce com previsões resolvidas e probabilidades bem calibradas.</p></div></div><div className="section-head"><div><h2>Minhas previsões</h2></div></div>{items.length===0?<div className="empty-card"><h3>Você ainda não publicou previsões.</h3></div>:<div className="feed">{items.map(i=><ForecastCard key={i.id} forecast={i}/>)}</div>}</section>}

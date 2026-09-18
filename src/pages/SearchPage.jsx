@@ -1,0 +1,6 @@
+import {useState} from 'react'
+import {Search} from 'lucide-react'
+import {api} from '../api'
+import ForecastCard from '../components/ForecastCard'
+import Seo from '../components/Seo'
+export default function SearchPage(){const[q,setQ]=useState('');const[items,setItems]=useState([]);const[busy,setBusy]=useState(false);const run=async e=>{e.preventDefault();setBusy(true);try{const{data}=await api.get('/forecasts',{params:{q,per_page:30}});setItems(data.data||[])}finally{setBusy(false)}};return <section><Seo title="Pesquisar" description="Pesquise previsões, temas e acontecimentos acompanhados pela Prevora." canonical="https://prevora.petertecnet.com.br/pesquisa"/><form className="search-page" onSubmit={run}><Search/><input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="Pesquise uma previsão, tema ou categoria…"/><button className="primary" disabled={busy||q.trim().length<2}>Pesquisar</button></form><div className="feed">{items.map(i=><ForecastCard key={i.id} forecast={i}/>)}</div></section>}
